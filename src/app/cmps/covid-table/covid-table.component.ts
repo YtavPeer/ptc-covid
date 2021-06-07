@@ -1,0 +1,145 @@
+import { AfterViewInit, Component, ViewChild, Input, EventEmitter, Output } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { SelectionModel } from '@angular/cdk/collections';
+import { OnInit } from '@angular/core';
+import { CovidService } from 'src/app/services/covid.service';
+
+
+export interface UserData {
+  id: string;
+  name: string;
+  progress: string;
+  fruit: string;
+}
+
+/** Constants used to fill up our data base. */
+const FRUITS: string[] = [
+  'blueberry', 'lychee', 'kiwi', 'mango', 'peach', 'lime', 'pomegranate', 'pineapple'
+];
+const NAMES: string[] = [
+  'Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack', 'Charlotte', 'Theodore', 'Isla', 'Oliver',
+  'Isabella', 'Jasper', 'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'
+];
+/**
+ * @title Data table with sorting, pagination, and filtering.
+ */
+
+
+@Component({
+  selector: 'app-covid-table',
+  templateUrl: './covid-table.component.html',
+  styleUrls: ['./covid-table.component.scss']
+})
+
+
+export class CovidTableComponent implements AfterViewInit {
+
+  displayedColumns: string[] = ['select', 'CountryCode', 'Country', 'NewConfirmed'];
+  dataSource: MatTableDataSource<UserData>;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  selection = new SelectionModel<any>(true, []);
+  selectionRow: object[] = [];
+
+  covidData: any;
+  covidCountry: any;
+  currentDate: any;
+  startDate: any;
+  endDate: any;
+
+  @Output() covidHistoryChanged: EventEmitter<any> = new EventEmitter();
+
+
+  constructor(private covidService: CovidService) {
+    // Create 100 users
+    const users = Array.from({ length: 100 }, (_, k) => createNewUser(k + 1));
+
+    this.covidService.getCovidSummery().then(res => {
+      this.covidData = res
+      this.covidCountry = this.covidData.Countries
+      console.log('covid country is', this.covidCountry)
+      this.dataSource = new MatTableDataSource(this.covidCountry);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    })
+
+    this.dataSource = new MatTableDataSource(users);
+
+  }
+
+  ngAfterViewInit() {
+
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  //function to get history
+  async getHistory() {
+    console.log('getting history')
+    const data = await this.covidService.getByCountry(this.selection.selected, this.startDate, this.endDate)
+    console.log('the data return from service is:', data)
+    this.covidHistoryChanged.emit(data);
+  }
+
+  //function for check box
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.dataSource.data.forEach(row => {
+        this.selection.select(row)
+      });
+  }
+
+  cellClicked($event: any) {
+    this.selectionRow.push($event);
+    console.log(this.selection.selected)
+  }
+
+  toggleRow(row: any) {
+    this.selection.toggle(row)
+    console.log(this.selection.selected)
+
+  }
+
+  logSelection() {
+    this.selection.selected.forEach(s => console.log(s.flag));
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+
+
+}
+
+
+
+
+
+/** Builds and returns a new User. */
+function createNewUser(id: number): UserData {
+  const name = NAMES[Math.round(Math.random() * (NAMES.length - 1))] + ' ' +
+    NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) + '.';
+
+  return {
+    id: id.toString(),
+    name: name,
+    progress: Math.round(Math.random() * 100).toString(),
+    fruit: FRUITS[Math.round(Math.random() * (FRUITS.length - 1))]
+  };
+}
+
+// {id: 354, name: 'dfasf',  progress: 353 , fruits: 'sdgs'}

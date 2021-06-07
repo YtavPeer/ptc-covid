@@ -1,0 +1,8 @@
+<div class="grid-container">
+
+      <div class="panel">
+            <app-covid-table (covidHistoryChanged)="covidHistoryChanged($event)"></app-covid-table>
+      </div>
+
+      <div class="chart"><app-chart [dataByCountry]="covidHistory" class="main-chart"></app-chart></div>
+</div>

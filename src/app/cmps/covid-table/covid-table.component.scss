@@ -1,0 +1,36 @@
+table {
+      width: 100%;
+}
+
+.mat-form-field {
+      font-size: 14px;
+      width: 100%;
+}
+
+td,
+th {
+      width: 25%;
+}
+
+.go{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+}
+
+.date-picker{
+      width: 200px;
+}
+
+.show-history-btn{
+      height: 40px;
+      
+      display: flex;
+      align-items: center;
+      justify-content: center;
+}
+
+.flag{
+      width: 30px;
+      display: flex;
+}

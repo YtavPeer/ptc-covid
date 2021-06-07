@@ -1,0 +1,16 @@
+.grid-container {
+      display: grid;
+      grid-template-columns: 20px 1.3fr 2.7fr 20px;
+      grid-template-rows: 1fr;
+      gap: 10px 3px;
+      grid-template-areas: ". panel chart .";
+}
+
+.panel {
+      grid-area: panel;
+}
+
+.chart {
+      grid-area: chart;
+      background-color: silver;
+}
