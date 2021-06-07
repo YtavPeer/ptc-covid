@@ -19,27 +19,7 @@ export class ChartComponent implements OnChanges, OnInit {
   currentSeries: any;
 
   chartOption: any;
-  //  = {
-  //   xAxis: {
-  //     type: 'category',
-  //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-  //   },
-  //   yAxis: {
-  //     type: 'value',
-  //   },
-  //   series: [
-  //     {
-  //       data: [820, 932, 901, 934, 1290, 1330, 1320],
-  //       type: 'line',
-  //     },
-  //     {
-  //       data: [820, 932, 350, 960, 1350, 68, 150],
-  //       type: 'line',
-  //     },
-  //   ],
-  // };
-
-
+  
   constructor(private covidService: CovidService) {
     this.historyData = this.covidService.currentHistory;
     console.log('history data', this.historyData)
@@ -77,7 +57,11 @@ export class ChartComponent implements OnChanges, OnInit {
           }
 
           //make the new object of ech country and push to series arr
+
+          console.log('try to get country', this.dataByCountry[j])
+
           let objCounty = {
+            name: this.dataByCountry[j][0].Country,
             data: currentCases,
             type: 'line',
           };
@@ -90,6 +74,16 @@ export class ChartComponent implements OnChanges, OnInit {
 
         //make the new data 
         let newChartData = {
+          title: {
+            text: 'Covid cases Diagram',
+            subtext: 'showing countris by dates',
+            x: 'center'
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} (Cases)'
+          },
+
           xAxis: {
             type: 'category',
             data: dates,
@@ -102,9 +96,9 @@ export class ChartComponent implements OnChanges, OnInit {
 
         //switch to chart
         // this.chartOption = newChartData
-        this.chartOption=newChartData
+        this.chartOption = newChartData
 
-      }, 1000);
+      }, 2000);
     }
   }
 

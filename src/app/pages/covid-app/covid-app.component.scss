@@ -12,5 +12,22 @@
 
 .chart {
       grid-area: chart;
-      background-color: silver;
+}
+
+@media only screen and (max-width: 860px) {
+      .panel {
+            background-color: #13c01c;
+      }
+      .chart {
+            background-color: #13c01c;
+      }
+}
+
+@media only screen and (max-width: 510px) {
+      .panel {
+            background-color: rgb(168, 33, 101);
+      }
+      .chart {
+            background-color: rgb(168, 33, 101);
+      }
 }
