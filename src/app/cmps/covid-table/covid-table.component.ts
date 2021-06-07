@@ -1,31 +1,10 @@
-import { AfterViewInit, Component, ViewChild, Input, EventEmitter, Output } from '@angular/core';
+import { Component, ViewChild, Input, EventEmitter, Output } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { OnInit } from '@angular/core';
 import { CovidService } from 'src/app/services/covid.service';
-
-
-export interface UserData {
-  id: string;
-  name: string;
-  progress: string;
-  fruit: string;
-}
-
-/** Constants used to fill up our data base. */
-const FRUITS: string[] = [
-  'blueberry', 'lychee', 'kiwi', 'mango', 'peach', 'lime', 'pomegranate', 'pineapple'
-];
-const NAMES: string[] = [
-  'Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack', 'Charlotte', 'Theodore', 'Isla', 'Oliver',
-  'Isabella', 'Jasper', 'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'
-];
-/**
- * @title Data table with sorting, pagination, and filtering.
- */
-
 
 @Component({
   selector: 'app-covid-table',
@@ -34,50 +13,37 @@ const NAMES: string[] = [
 })
 
 
-export class CovidTableComponent implements AfterViewInit {
+export class CovidTableComponent {
 
   displayedColumns: string[] = ['select', 'CountryCode', 'Country', 'NewConfirmed'];
   dataSource: MatTableDataSource<UserData>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-
   selection = new SelectionModel<any>(true, []);
   selectionRow: object[] = [];
-
   covidData: any;
   covidCountry: any;
   currentDate: any;
   startDate: any;
   endDate: any;
-
   @Output() covidHistoryChanged: EventEmitter<any> = new EventEmitter();
-
 
   constructor(private covidService: CovidService) {
     // Create 100 users
     const users = Array.from({ length: 100 }, (_, k) => createNewUser(k + 1));
-
     this.covidService.getCovidSummery().then(res => {
       this.covidData = res
       this.covidCountry = this.covidData.Countries
-      console.log('covid country is', this.covidCountry)
       this.dataSource = new MatTableDataSource(this.covidCountry);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     })
-
     this.dataSource = new MatTableDataSource(users);
-
-  }
-
-  ngAfterViewInit() {
-
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
-
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
@@ -87,11 +53,10 @@ export class CovidTableComponent implements AfterViewInit {
   async getHistory() {
     console.log('getting history')
     const data = await this.covidService.getByCountry(this.selection.selected, this.startDate, this.endDate)
-    console.log('the data return from service is:', data)
     this.covidHistoryChanged.emit(data);
   }
 
-  //function for check box
+  //function for get\select the check box row in table
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
@@ -108,7 +73,6 @@ export class CovidTableComponent implements AfterViewInit {
   toggleRow(row: any) {
     this.selection.toggle(row)
     console.log(this.selection.selected)
-
   }
 
   logSelection() {
@@ -120,20 +84,29 @@ export class CovidTableComponent implements AfterViewInit {
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
-
-
-
 }
 
+//***demo data for the Chart***
+export interface UserData {
+  id: string;
+  name: string;
+  progress: string;
+  fruit: string;
+}
 
-
-
+/** Constants used to fill up our data base. */
+const FRUITS: string[] = [
+  'blueberry', 'lychee', 'kiwi', 'mango', 'peach', 'lime', 'pomegranate', 'pineapple'
+];
+const NAMES: string[] = [
+  'Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack', 'Charlotte', 'Theodore', 'Isla', 'Oliver',
+  'Isabella', 'Jasper', 'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'
+];
 
 /** Builds and returns a new User. */
 function createNewUser(id: number): UserData {
   const name = NAMES[Math.round(Math.random() * (NAMES.length - 1))] + ' ' +
     NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) + '.';
-
   return {
     id: id.toString(),
     name: name,
@@ -142,4 +115,3 @@ function createNewUser(id: number): UserData {
   };
 }
 
-// {id: 354, name: 'dfasf',  progress: 353 , fruits: 'sdgs'}

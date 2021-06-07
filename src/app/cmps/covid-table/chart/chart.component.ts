@@ -2,9 +2,6 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { CovidService } from 'src/app/services/covid.service';
 
-
-
-
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
@@ -12,26 +9,19 @@ import { CovidService } from 'src/app/services/covid.service';
 })
 export class ChartComponent implements OnChanges, OnInit {
 
-  historyData: any;
-
   @Input() dataByCountry: any;
+  historyData: any;
   currentDate: any;
   currentSeries: any;
-
   chartOption: any;
-  
+
   constructor(private covidService: CovidService) {
     this.historyData = this.covidService.currentHistory;
-    console.log('history data', this.historyData)
   }
 
   ngOnChanges(changes: any) {
-
-    console.log('on change', this.dataByCountry)
-
     if (this.dataByCountry) {
       setTimeout(() => {
-
         //setting the dates
         let dates = [];
         let length = this.dataByCountry[0].length;
@@ -40,26 +30,16 @@ export class ChartComponent implements OnChanges, OnInit {
           dates.push(element)
         }
         this.currentDate = dates;
-        console.log('current dates is:', this.currentDate)
-
         //setting the series
         let series = []
-        console.log('the serieal is', this.dataByCountry)
-
-
         for (let j = 0; j < this.dataByCountry.length; j++) {
           //need to make inner loop to fill the data of current cases
           let currentCases = [];
-
           for (let k = 0; k < this.dataByCountry[j].length; k++) {
             let currCase = this.dataByCountry[j][k].Cases;
             currentCases.push(currCase)
           }
-
           //make the new object of ech country and push to series arr
-
-          console.log('try to get country', this.dataByCountry[j])
-
           let objCounty = {
             name: this.dataByCountry[j][0].Country,
             data: currentCases,
@@ -68,10 +48,6 @@ export class ChartComponent implements OnChanges, OnInit {
           //push to series
           series.push(objCounty);
         }
-
-        console.log('the full series is', series)
-
-
         //make the new data 
         let newChartData = {
           title: {
@@ -83,7 +59,6 @@ export class ChartComponent implements OnChanges, OnInit {
             trigger: 'item',
             formatter: '{a} <br/>{b} : {c} (Cases)'
           },
-
           xAxis: {
             type: 'category',
             data: dates,
@@ -93,9 +68,7 @@ export class ChartComponent implements OnChanges, OnInit {
           },
           series: series
         }
-
-        //switch to chart
-        // this.chartOption = newChartData
+        //switch to covid chart
         this.chartOption = newChartData
 
       }, 2000);
@@ -103,7 +76,7 @@ export class ChartComponent implements OnChanges, OnInit {
   }
 
   ngOnInit() {
-    console.log('Init', this.dataByCountry);
+    console.log('Init');
   }
 
 }

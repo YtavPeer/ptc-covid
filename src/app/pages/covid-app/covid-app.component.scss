@@ -14,9 +14,7 @@
       grid-area: chart;
 }
 
-
 @media only screen and (max-width: 780px) {
-
       .grid-container {
             display: grid;
             grid-template-columns: 10px 1fr 10px;

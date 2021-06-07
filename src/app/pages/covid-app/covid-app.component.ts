@@ -12,14 +12,12 @@ export class CovidAppComponent implements OnInit {
   covidCountry: any;
   covidHistory: any;
 
-
   constructor(private covidService: CovidService) { }
 
   ngOnInit(): void {
     this.covidService.getCovidSummery().then(res => {
       this.covidData = res
       this.covidCountry = this.covidData.Countries
-      console.log(this.covidCountry)
     })
   }
 
